@@ -3,7 +3,7 @@
 
     _.map = function(items, closure, keepKeys)
     {
-        if (typeof keepKeys)
+        if (typeof keepKeys == 'undefined')
         {
             keepKeys = false;
         }
