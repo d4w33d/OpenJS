@@ -1,7 +1,7 @@
 <?php
 
 define('DS', DIRECTORY_SEPARATOR);
-define('ROOT_DIR', dirname(__file__));
+define('ROOT_DIR', dirname(dirname(__file__)));
 define('SRC_DIR', ROOT_DIR . DS . 'src');
 define('PLUGINS_DIR', SRC_DIR . DS . 'plugins');
 
@@ -30,15 +30,32 @@ class Binder
         return $files;
     }
 
-    public function directOutput()
+    public function generateBinder($minified = false)
     {
         $bind = '';
-        foreach ($this->getFiles() as $f)
+        foreach ($this->getFiles(true) as $f)
         {
             $bind .= file_get_contents($f);
         }
-        header('Content-type: text/javascript; charset=utf-8');
-        echo $bind;
+        if ($minified)
+        {
+            require_once ROOT_DIR . DS . 'bind' . DS . 'vendor' . DS .
+                'JShrink' . DS . 'Minifier.php';
+            $bind = trim(JShrink\Minifier::minify($bind));
+        }
+        return $bind;
     }
 
+    public function directOutput($minified = false)
+    {
+        header('Content-type: text/javascript; charset=utf-8');
+        echo $this->generateBinder($minified);
+    }
+
+}
+
+if (isset($_GET['live']))
+{
+    $binder = new Binder();
+    $binder->directOutput(true);
 }

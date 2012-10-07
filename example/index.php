@@ -1,6 +1,6 @@
 <?php
 
-  require '../bind.php';
+  require '../bind/bind.php';
   $binder = new Binder();
 
 ?>
