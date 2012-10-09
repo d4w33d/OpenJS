@@ -9,8 +9,9 @@
         if (closure instanceof Function)
         {
             _.each(els, closure);
+            return _;
         }
-        return _;
+        return els;
     };
 
     _.dom.byid = function(id, parent)
