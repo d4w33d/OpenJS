@@ -1,4 +1,6 @@
 
+$o.opt({ verbose: true }); // Useless (cf. data-openjs-verbose in DOM)
+
 $o.req.opt({
     plugins_dir: 'js/',
     special_dirs: {

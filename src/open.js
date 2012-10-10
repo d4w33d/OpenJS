@@ -3,30 +3,59 @@ var openjs = {};
 
 (function(_) {
 
-    _.conflicted = null;
+    var opts = {};
+
+    opts.verbose = false;
+
+    var conflicted = null;
 
     _.init = function()
     {
         if (typeof $o != 'undefined')
         {
-            _.conflicted = $o;
+            conflicted = $o;
         }
         _.ready(function()
         {
-            _._loadScriptBootstrap();
+            _._processScriptTags();
         });
     };
 
-    _._loadScriptBootstrap = function()
+    _.opt = function(key, value)
+    {
+        if (key instanceof Object)
+        {
+            opts = _.extend(opts, key);
+            return _;
+        }
+        if (typeof value != 'undefined')
+        {
+            opts[key] = value;
+            return _;
+        }
+        return typeof opts[key] != 'undefined' ? opts[key] : null;
+    };
+
+    _._processScriptTags = function()
     {
         var els = _.dom.bytag('script');
         var i, len = els.length;
         for (i = 0; i < len; i++)
         {
-            var src = _.dom.data(els[i], 'bootstrap');
+            var src = _.dom.data(els[i], 'openjs');
+            _.each(opts, function(value, key)
+            {
+                value = _.dom.data(els[i], 'openjs-' + key);
+                if (value == 'yes' || value == 'no')
+                {
+                    _.opt(key, value == 'yes');
+                    return;
+                }
+                _.opt(key, value);
+            });
             if (src)
             {
-                _.req.current(src);
+                _.req.current('__init__');
                 _.req([src], null, true);
             }
         }
@@ -34,12 +63,31 @@ var openjs = {};
 
     _.noConflict = function()
     {
-        if (_.conflicted === null && typeof $o != 'undefined')
+        if (conflicted === null && typeof $o != 'undefined')
         {
             delete $o;
             return;
         }
-        $o = _.conflicted;
+        $o = conflicted;
+    };
+
+    _.log = function(str, type, forceLogging)
+    {
+        if (typeof forceLogging == 'undefined')
+        {
+            forceLogging = false;
+        }
+        if ((!opts.verbose && !forceLogging) || typeof console == 'undefined')
+        {
+            return _;
+        }
+        if (typeof type == 'undefined' || type != 'warn' || type != 'error')
+        {
+            type = 'log';
+        }
+        str = '[openjs] ' + str;
+        console[type](str);
+        return _;
     };
 
 }(openjs));

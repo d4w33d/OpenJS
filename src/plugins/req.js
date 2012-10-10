@@ -21,7 +21,10 @@
         {
             fullPath = false;
         }
+
         var name = current;
+        _.log('.req: ' + name);
+
         _.req.mods(modules, function(objects)
         {
             var value = true;
@@ -68,7 +71,7 @@
             return _;
         }
 
-        var url = name + '.js';
+        var url = name;
         if (!fullPath && name.indexOf(':') > 0)
         {
             var parts = name.split(':');
@@ -79,12 +82,12 @@
             url = opts.plugins_dir + name;
         }
         current = name;
-        _.import(url, function()
+        _.import(url + '.js', function()
         {
             _.req.mods(modules, closure, i + 1);
         }, function()
         {
-            console.error('Error loading module ' + url);
+            _.log('Error loading module ' + url, 'error', true);
             _.req.mods(modules, closure, i + 1);
         });
         return _;
@@ -92,6 +95,10 @@
 
     _.req.opt = function(options)
     {
+        if (options instanceof String)
+        {
+            return typeof opts[options] != 'undefined' ? opts[options] : null;
+        }
         opts = _.extend(opts, options);
         return _;
     };
@@ -103,6 +110,7 @@
             return current;
         }
         current = name;
+        return _;
     };
 
 }(openjs));

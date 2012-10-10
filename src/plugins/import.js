@@ -21,8 +21,10 @@
             _.dom.attr(node, 'type', 'text/javascript');
             _.dom.attr(node, 'src', src);
         }
+        _.log('.import: importing <' + src + '>');
         _.dom.bind(node, 'load', function()
         {
+            _.log('.import: success importing <' + src + '>');
             if (success instanceof Function)
             {
                 success.call(_, node, src);
@@ -30,6 +32,7 @@
         });
         _.dom.bind(node, 'error', function()
         {
+            _.log('.import: error importing <' + src + '>', 'error');
             if (error instanceof Function)
             {
                 error.call(_, node, src);
